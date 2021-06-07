@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(BlockchainCourse)
+project(Marabu)
 
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE Release)
@@ -11,5 +11,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED true)
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 include_directories(source)
+include_directories(cryptopp)
 
-add_executable(BlockchainCourse source/main.cpp)
+file(GLOB CryptoPPSource
+     "cryptopp/*.cpp"
+)
+
+add_library(CryptoPP ${CryptoPPSource})
+
+add_executable(Marabu source/main.cpp)
+target_link_libraries(Marabu CryptoPP)
