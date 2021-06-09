@@ -1,5 +1,5 @@
 # Marabu
-[Block chain course](https://new.blockchain-course.org/protocol.md) assignment implementation written in C++.  
+[Block chain course](https://new.blockchain-course.org) assignment implementation written in C++, tutored by [@dionyziz](https://github.com/dionyziz)
 
 ### Installation
 
