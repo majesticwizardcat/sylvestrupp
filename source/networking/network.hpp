@@ -14,10 +14,13 @@ private:
 public:
     Connection() = delete;
     Connection(const Connection& other) = delete;
-    Connection(asio::ip::tcp::socket socket) : m_socket(std::move(socket)) { }
-    Connection(Connection&& other) : m_socket(std::move(other.m_socket)), m_alive(true) { }
+    Connection(asio::ip::tcp::socket socket) : m_socket(std::move(socket)), m_alive(true) { }
+    Connection(Connection&& other) : m_socket(std::move(other.m_socket)), m_alive(other.m_alive) { }
 
     std::string read() {
+		if (!m_alive) {
+			return "";
+		}
 		try {
 			asio::streambuf buf;
 			asio::read_until(m_socket, buf, '\n');
@@ -30,6 +33,9 @@ public:
     }
 
     bool send(const std::string& message) {
+		if (!m_alive) {
+			return false;
+		}
 		try {
 			const std::string msg = message + '\n';
 			asio::write(m_socket, asio::buffer(msg));
@@ -75,7 +81,14 @@ public:
 
         asio::io_service ioService;
         asio::ip::tcp::socket socket(ioService);
-        socket.connect(it->endpoint());
+		try {
+        	socket.connect(it->endpoint());
+		}
+		catch (const std::exception& e) { 
+			Connection c(std::move(socket));
+			c.terminate();
+			return std::move(c);
+		}
         return Connection(std::move(socket));
     }
 };

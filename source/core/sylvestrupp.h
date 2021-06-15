@@ -20,4 +20,5 @@ public:
 	Sylvestrupp() : m_server(DEFAULT_PORT) { }
 
 	void start();
+	void connectTo(const std::string& ip, int port);
 };

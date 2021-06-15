@@ -50,6 +50,11 @@ void Peer::processHelloMessage(const HelloMessage* message) {
 }
 
 void Peer::startWork(bool startCommunication) {
+	if (!m_connection.isActive()) {
+		m_finished = true;
+		return;
+	}
+	m_finished = false;
 	m_starter = startCommunication;
 	if (startCommunication) {
 		m_connection.send(HelloMessage().asJson());
@@ -72,4 +77,5 @@ void Peer::startWork(bool startCommunication) {
 		processMessages();
 	}
 	reader.join();
+	m_finished = true;
 }

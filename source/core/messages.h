@@ -8,17 +8,24 @@
 #include <map>
 
 const std::string MESSAGE_TYPE_HELLO = "hello";
+const std::string MESSAGE_TYPE_GET_PEERS = "getpeers";
+const std::string MESSAGE_TYPE_PEERS = "peers";
 
 const std::string STR_TYPE = "type";
 const std::string STR_VERSION = "version";
 const std::string STR_AGENT = "agent";
+const std::string STR_PEERS = "peers";
 
 enum class MessageType {
 	HELLO,
+	GET_PEERS,
+	PEERS,
 };
 
 const std::map<std::string, MessageType> GET_TYPE = {
 	std::make_pair(MESSAGE_TYPE_HELLO, MessageType::HELLO),
+	std::make_pair(MESSAGE_TYPE_GET_PEERS, MessageType::GET_PEERS),
+	std::make_pair(MESSAGE_TYPE_PEERS, MessageType::PEERS),
 };
 
 class Message {
@@ -31,7 +38,13 @@ public:
 	Message(const Message& other) : type(other.type) { }
 	virtual ~Message() { }
 
-	virtual std::string asJson() const = 0;
+	virtual std::string asJson() const {
+		nlohmann::json msg
+		{
+			{STR_TYPE, type},
+		};
+		return msg.dump();
+	}
 };
 
 class HelloMessage : public Message {
@@ -52,6 +65,27 @@ public:
 			{STR_TYPE, type},
 			{STR_VERSION, version},
 			{STR_AGENT, agent}
+		};
+		return msg.dump();
+	}
+};
+
+class GetPeersMessage : public Message {
+public:
+	GetPeersMessage() : Message(MESSAGE_TYPE_GET_PEERS) { }
+};
+
+class PeersMessage : public Message {
+public:
+	std::vector<std::string> peerIps;
+
+	PeersMessage() : Message(MESSAGE_TYPE_PEERS) { }
+
+	std::string asJson() const {
+		nlohmann::json msg
+		{
+			{STR_TYPE, type},
+			{STR_PEERS, peerIps}
 		};
 		return msg.dump();
 	}
