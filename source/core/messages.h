@@ -9,9 +9,9 @@
 
 const std::string MESSAGE_TYPE_HELLO = "hello";
 
-const std::string TYPE = "type";
-const std::string VERSION = "version";
-const std::string AGENT = "agent";
+const std::string STR_TYPE = "type";
+const std::string STR_VERSION = "version";
+const std::string STR_AGENT = "agent";
 
 enum class MessageType {
 	HELLO,
@@ -49,9 +49,9 @@ public:
 	std::string asJson() const {
 		nlohmann::json msg
 		{
-			{TYPE, type},
-			{VERSION, version},
-			{AGENT, agent}
+			{STR_TYPE, type},
+			{STR_VERSION, version},
+			{STR_AGENT, agent}
 		};
 		return msg.dump();
 	}

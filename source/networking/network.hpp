@@ -44,6 +44,9 @@ public:
     inline bool isActive() const { return m_alive; }
 	inline std::string getName() const { return m_socket.remote_endpoint().address().to_string(); }
 	inline void terminate() {
+		if (!m_alive) {
+			return;
+		}
 		m_alive = false;
 		m_socket.close();
 	}

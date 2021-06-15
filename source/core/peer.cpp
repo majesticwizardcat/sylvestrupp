@@ -1,12 +1,11 @@
 #include "core/peer.h"
 #include "tools/tools.hpp"
+#include "core/constants.h"
 
 #include <iostream>
 
 Peer::~Peer() {
-	if (m_connection.isActive()) {
-		m_connection.terminate();
-	}
+	m_connection.terminate();
 }
 
 void Peer::processMessages() {
@@ -35,6 +34,11 @@ void Peer::processMessages() {
 void Peer::processHelloMessage(const HelloMessage* message) {
 	if (m_handshake) {
 		std::cout << "Double handshake from peer: " << m_connection.getName() << std::endl;
+		m_connection.terminate();
+		return;
+	}
+	if (message->version != LATEST_VERSION) {
+		std::cout << "Bad version: " << message->version << std::endl;
 		m_connection.terminate();
 		return;
 	}
