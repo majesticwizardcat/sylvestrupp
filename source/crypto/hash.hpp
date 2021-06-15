@@ -2,8 +2,9 @@
 
 #include <functional>
 #include <algorithm>
-
 #include <string>
+
+// CryptoPP Includes
 #include <config.h>
 #include <sha.h>
 #include <hex.h>

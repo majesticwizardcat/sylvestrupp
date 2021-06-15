@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(Marabu)
+project(Sylvestrupp)
 
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE Release)
@@ -12,6 +12,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 include_directories(source)
 include_directories(cryptopp)
+include_directories(json)
 
 file(GLOB CryptoPPSource
      "cryptopp/*.cpp"
@@ -19,5 +20,8 @@ file(GLOB CryptoPPSource
 
 add_library(CryptoPP ${CryptoPPSource})
 
-add_executable(Marabu source/main.cpp)
-target_link_libraries(Marabu CryptoPP)
+add_subdirectory(source)
+
+add_executable(Sylvestrupp source/main.cpp)
+target_link_libraries(Sylvestrupp Core)
+target_link_libraries(Sylvestrupp CryptoPP)

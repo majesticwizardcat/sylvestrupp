@@ -1,1 +1,1 @@
-add_library(Main main.cpp)
+add_subdirectory(core)
