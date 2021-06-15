@@ -48,7 +48,10 @@ public:
 			return;
 		}
 		m_alive = false;
-		m_socket.close();
+		try {
+			m_socket.close();
+		}
+		catch (const std::exception& e) { }
 	}
 };
 
