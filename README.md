@@ -1,10 +1,11 @@
-# Marabu
-[Block chain course](https://new.blockchain-course.org) assignment implementation written in C++, tutored by [@dionyziz](https://github.com/dionyziz)
+# Sylvestrupp
+
+Implementation of Marabu chain in C++. This is done as a project for the [blockchain course](https://marabu.dev/), tutored by [@dionyziz](https://github.com/dionyziz)
 
 ### Installation
 
 - First Clone the repository and the init the submodules:  
-`git clone git@github.com:loukoum/marabu`  
+`git clone git@github.com:loukoum/sylvestrupp`  
 `git submodule init`  
 `git submodule update`  
 
