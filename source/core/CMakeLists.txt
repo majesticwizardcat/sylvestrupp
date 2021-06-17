@@ -3,3 +3,5 @@ add_library(Core
 	sylvestrupp.cpp
 	messages.cpp
 )
+
+target_link_libraries(Core Tools)

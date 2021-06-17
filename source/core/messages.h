@@ -92,4 +92,6 @@ public:
 };
 
 std::unique_ptr<Message> parseHello(const nlohmann::json& json);
+std::unique_ptr<Message> parseGetPeers(const nlohmann::json& json);
+std::unique_ptr<Message> parsePeers(const nlohmann::json& json);
 std::unique_ptr<Message> parseFromJson(const std::string& msg);
