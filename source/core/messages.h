@@ -10,11 +10,16 @@
 const std::string MESSAGE_TYPE_HELLO = "hello";
 const std::string MESSAGE_TYPE_GET_PEERS = "getpeers";
 const std::string MESSAGE_TYPE_PEERS = "peers";
+const std::string MESSAGE_TYPE_GET_OBJECT = "getobject";
+const std::string MESSAGE_TYPE_I_HAVE_OBJECT = "ihaveobject";
+const std::string MESSAGE_TYPE_OBJECT = "object";
 
 const std::string STR_TYPE = "type";
 const std::string STR_VERSION = "version";
 const std::string STR_AGENT = "agent";
 const std::string STR_PEERS = "peers";
+const std::string STR_OBJECT_ID = "objectid";
+const std::string STR_OBJECT = "object";
 
 enum class MessageType {
 	HELLO,
@@ -91,7 +96,58 @@ public:
 	}
 };
 
+class GetObjectMessage : public Message {
+public:
+	std::string objectId;
+
+	GetObjectMessage() : Message(MESSAGE_TYPE_GET_OBJECT) { }
+
+	std::string asJson() const {
+		nlohmann::json msg
+		{
+			{STR_TYPE, type},
+			{STR_OBJECT_ID, objectId}
+		};
+		return msg.dump();
+	}
+};
+
+class IHaveObjectMessage : public Message {
+public:
+	std::string objectId;
+
+	IHaveObjectMessage() : Message(MESSAGE_TYPE_I_HAVE_OBJECT) { }
+
+	std::string asJson() const {
+		nlohmann::json msg
+		{
+			{STR_TYPE, type},
+			{STR_OBJECT_ID, objectId}
+		};
+		return msg.dump();
+	}
+};
+
+class ObjectMessage : public Message {
+public:
+	std::string object;
+
+	ObjectMessage() : Message(MESSAGE_TYPE_OBJECT) { }
+
+	std::string asJson() const {
+		nlohmann::json msg
+		{
+			{STR_TYPE, type},
+			{STR_OBJECT, object}
+		};
+		return msg.dump();
+	}
+};
+
 std::unique_ptr<Message> parseHello(const nlohmann::json& json);
 std::unique_ptr<Message> parseGetPeers(const nlohmann::json& json);
 std::unique_ptr<Message> parsePeers(const nlohmann::json& json);
+std::unique_ptr<Message> parseGetObject(const nlohmann::json& json);
+std::unique_ptr<Message> parseObject(const nlohmann::json& json);
+std::unique_ptr<Message> parseIHaveObject(const nlohmann::json& json);
 std::unique_ptr<Message> parseFromJson(const std::string& msg);
