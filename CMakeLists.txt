@@ -13,10 +13,13 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 include_directories(source)
 include_directories(cryptopp)
 include_directories(json)
+include_directories(leveldb)
 
 file(GLOB CryptoPPSource
      "cryptopp/*.cpp"
 )
+
+add_subdirectory(leveldb)
 
 add_library(CryptoPP ${CryptoPPSource})
 
@@ -25,5 +28,6 @@ add_subdirectory(source)
 add_executable(Sylvestrupp source/main.cpp)
 target_link_libraries(Sylvestrupp Core)
 target_link_libraries(Sylvestrupp CryptoPP)
+target_link_libraries(Sylvestrupp leveldb)
 
 add_subdirectory(tests)

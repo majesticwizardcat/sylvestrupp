@@ -5,9 +5,7 @@ Implementation of Marabu chain in C++. This is done as a project for the [blockc
 ### Installation
 
 - First Clone the repository and the init the submodules:  
-`git clone git@github.com:loukoum/sylvestrupp`  
-`git submodule init`  
-`git submodule update`  
+`git clone --recurse-submodules git@github.com:loukoum/sylvestrupp`  
 
 - Install [ASIO](https://think-async.com/Asio/) using your package manager. You need the standalone version not the boost one:  
 `brew install asio`
