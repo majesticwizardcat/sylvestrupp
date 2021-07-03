@@ -25,3 +25,5 @@ add_subdirectory(source)
 add_executable(Sylvestrupp source/main.cpp)
 target_link_libraries(Sylvestrupp Core)
 target_link_libraries(Sylvestrupp CryptoPP)
+
+add_subdirectory(tests)
