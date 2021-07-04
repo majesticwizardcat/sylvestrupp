@@ -4,3 +4,26 @@
 std::string MarabuObject::asHash() const {
 	return hashing::encodeHex(hashing::SHA256(asJson()));
 }
+
+std::string Transaction::asJson() const {
+	nlohmann::json js {
+		{OBJECT_STR_TYPE, OBJECT_TYPE_TO_STRING[getType()]},
+		{OBJECT_STR_INPUTS, m_inputs},
+		{OBJECT_STR_OUTPUTS, m_outputs}
+	};
+	return js.dump();
+}
+
+std::string Block::asJson() const {
+	nlohmann::json js {
+		{OBJECT_STR_TYPE, OBJECT_TYPE_TO_STRING[getType()]},
+		{OBJECT_STR_TXIDS, m_txids},
+		{OBJECT_STR_NONCE, m_nonce},
+		{OBJECT_STR_PREVID, m_prevId},
+		{OBJECT_STR_CREATED, m_created},
+		{OBJECT_STR_T, m_target},
+		{OBJECT_STR_MINER, m_miner},
+		{OBJECT_STR_NOTE, m_note}
+	};
+	return js.dump();
+}
