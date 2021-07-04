@@ -25,12 +25,18 @@ enum class MessageType {
 	HELLO,
 	GET_PEERS,
 	PEERS,
+	GET_OBJECT,
+	OBJECT,
+	I_HAVE_OBJECT,
 };
 
 const std::map<std::string, MessageType> GET_TYPE = {
 	std::make_pair(MESSAGE_TYPE_HELLO, MessageType::HELLO),
 	std::make_pair(MESSAGE_TYPE_GET_PEERS, MessageType::GET_PEERS),
 	std::make_pair(MESSAGE_TYPE_PEERS, MessageType::PEERS),
+	std::make_pair(MESSAGE_TYPE_OBJECT, MessageType::OBJECT),
+	std::make_pair(MESSAGE_TYPE_GET_OBJECT, MessageType::GET_OBJECT),
+	std::make_pair(MESSAGE_TYPE_I_HAVE_OBJECT, MessageType::I_HAVE_OBJECT),
 };
 
 class Message {

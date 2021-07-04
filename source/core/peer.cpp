@@ -1,6 +1,7 @@
 #include "core/peer.h"
 #include "tools/tools.h"
 #include "core/constants.h"
+#include "crypto/hash.h"
 
 #include <iostream>
 #include <utility>
@@ -22,7 +23,7 @@ Peer& Peer::operator=(Peer other) {
 }
 
 void Peer::processMessages() {
-	while (!m_messages.empty()) {
+	while (m_connection.isActive() && !m_messages.empty()) {
 		const std::string& next = m_messages[0];
 		std::cout << "Processing: " << next << " from: " << m_connection.getName() << '\n';
 		std::unique_ptr<Message> msg = parseFromJson(next);
@@ -42,9 +43,19 @@ void Peer::processMessages() {
 		case MessageType::PEERS:
 			processPeersMessage(dynamic_cast<PeersMessage*>(msg.get()));
 			break;
+		case MessageType::OBJECT:
+			processObjectMessage(dynamic_cast<ObjectMessage*>(msg.get()));
+			break;
+		case MessageType::GET_OBJECT:
+			processGetObjectMessage(dynamic_cast<GetObjectMessage*>(msg.get()));
+			break;
+		case MessageType::I_HAVE_OBJECT:
+			processIHaveObjectMessage(dynamic_cast<IHaveObjectMessage*>(msg.get()));
+			break;
 		default:
 			std::cout << "[NODE_ERROR]: Could not find message type" << '\n';
 			m_connection.terminate();
+			return;
 		};
 		m_messages.erase(m_messages.begin());
 	}
@@ -52,12 +63,12 @@ void Peer::processMessages() {
 
 void Peer::processHelloMessage(const HelloMessage* message) {
 	if (m_handshake) {
-		std::cout << "Double handshake from peer: " << m_connection.getName() << std::endl;
+		std::cout << "Double handshake from: " << getName() << std::endl;
 		m_connection.terminate();
 		return;
 	}
 	if (message->version != LATEST_VERSION) {
-		std::cout << "Bad version: " << message->version << std::endl;
+		std::cout << "Bad version: " << message->version << " from: " << getName() << std::endl;
 		m_connection.terminate();
 		return;
 	}
@@ -82,6 +93,49 @@ void Peer::processGetPeersMessage(const GetPeersMessage* message) {
 	m_connection.send(json);
 }
 
+void Peer::processIHaveObjectMessage(const IHaveObjectMessage* message) {
+	if (!m_handshake) {
+		std::cout << getName() << " is broadcasting object without handshake" << '\n';
+		m_connection.terminate();
+		return;
+	}
+	if (m_node->objectExists(message->objectId)) {
+		return;
+	}
+	GetObjectMessage getObject;
+	getObject.objectId = message->objectId;
+	std::string json = getObject.asJson();
+	std::cout << "Asking for object: " << json << " from: " << getName() << '\n';
+	m_connection.send(json);
+}
+
+void Peer::processObjectMessage(const ObjectMessage* message) {
+	if (!m_handshake) {
+		std::cout << getName() << " is giving an object without handshake" << '\n';
+		m_connection.terminate();
+		return;
+	}
+	std::cout << "Recieved object: " << message->object << " from: " << getName() << '\n';
+	m_node->addObject(hashing::SHA256AndEncode(message->object), message->object);
+}
+
+void Peer::processGetObjectMessage(const GetObjectMessage* message) {
+	if (!m_handshake) {
+		std::cout << getName() << " is asking for an object without handshake" << '\n';
+		m_connection.terminate();
+		return;
+	}
+	std::string object;
+	if (!m_node->getObject(message->objectId, &object)) {
+		return;
+	}
+	ObjectMessage objectMessage;
+	objectMessage.object = object;
+	std::string json = objectMessage.asJson();
+	std::cout << "Sending object: " << json << " to: " << getName() << '\n';
+	m_connection.send(json);
+}
+
 void Peer::processPeersMessage(const PeersMessage* message) {
 	if (!m_handshake) {
 		std::cout << getName() << " is sending peers without handshake" << '\n';
@@ -95,7 +149,7 @@ void Peer::processPeersMessage(const PeersMessage* message) {
 void Peer::startWork(bool startCommunication) {
 	std::mutex queueLock;
 	std::condition_variable queueCondition;
-	std::cout << "Starting peer: " << getIp() << '\n';
+	std::cout << "Starting peer: " << getName() << '\n';
 	if (!m_connection.isActive()) {
 		std::cout << "Connection is dead: " << getName() << '\n';
 		m_running = false;

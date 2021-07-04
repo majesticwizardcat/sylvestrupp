@@ -2,7 +2,7 @@
 
 class Sylvestrupp;
 
-#include "networking/network.hpp"
+#include "core/network.h"
 #include "core/peer.h"
 #include "core/constants.h"
 
@@ -20,6 +20,8 @@ private:
 	TcpServer m_server;
 	std::map<std::string, Peer> m_peers;
 	std::mutex m_peersLock;
+	std::map<std::string, std::string> m_objectsCache;
+	std::mutex m_objectsCacheLock;
 
 	void bootstrap();
 
@@ -33,4 +35,7 @@ public:
 	Peer& addPeer(Peer peer, bool starter);
 	std::vector<std::string> getPeerIpsCopy();
 	void addNewPeers(const std::vector<std::string>& peers);
+	bool addObject(const std::string& key, const std::string& value);
+	bool objectExists(const std::string& key);
+	bool getObject(const std::string& key, std::string* value);
 };

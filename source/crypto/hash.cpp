@@ -50,4 +50,9 @@ bool compareBytes(const std::string& first, const std::string& second) {
 	return false;
 }
 
+std::string SHA256AndEncode(const std::string in) {
+	return encodeHex(SHA256(in));
+}
+
+
 };

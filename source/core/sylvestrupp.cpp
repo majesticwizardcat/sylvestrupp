@@ -48,10 +48,33 @@ void Sylvestrupp::addNewPeers(const std::vector<std::string>& peers) {
 	for (const auto& peer : peers) {
 		auto ipAndPort = tools::breakNameToParts(peer);
 		if (ipAndPort.has_value()
-		&& m_peers.find(TcpClient(ipAndPort.value().first, ipAndPort.value().second).getName()) == m_peers.end()) {
+		&& m_peers.find(TcpClient(ipAndPort.value().first,ipAndPort.value().second).getName()) == m_peers.end()) {
 			connectTo(ipAndPort.value().first, ipAndPort.value().second);
 		}
 	}
+}
+
+bool Sylvestrupp::addObject(const std::string& key, const std::string& value) {
+	std::lock_guard<std::mutex> lck(m_objectsCacheLock);
+	if (m_objectsCache.find(key) != m_objectsCache.end()) {
+		return false;
+	}
+	m_objectsCache[key] = value;
+	return true;
+}
+
+bool Sylvestrupp::objectExists(const std::string& key) {
+	std::lock_guard<std::mutex> lck(m_objectsCacheLock);
+	return m_objectsCache.find(key) != m_objectsCache.end();
+}
+
+bool Sylvestrupp::getObject(const std::string& key, std::string* value) {
+	std::lock_guard<std::mutex> lck(m_objectsCacheLock);
+	if (m_objectsCache.find(key) == m_objectsCache.end()) {
+		return false;
+	}
+	*value = m_objectsCache[key];
+	return true;
 }
 
 void Sylvestrupp::start() {

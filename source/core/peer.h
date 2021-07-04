@@ -2,7 +2,7 @@
 
 class Peer;
 
-#include "networking/network.hpp"
+#include "core/network.h"
 #include "core/messages.h"
 #include "core/sylvestrupp.h"
 
@@ -23,6 +23,9 @@ private:
 	void processHelloMessage(const HelloMessage* message);
 	void processGetPeersMessage(const GetPeersMessage* message);
 	void processPeersMessage(const PeersMessage* message);
+	void processIHaveObjectMessage(const IHaveObjectMessage* message);
+	void processObjectMessage(const ObjectMessage* message);
+	void processGetObjectMessage(const GetObjectMessage* message);
 
 public:
 	Peer() = delete;
