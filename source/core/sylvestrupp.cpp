@@ -48,7 +48,8 @@ void Sylvestrupp::addNewPeers(const std::vector<std::string>& peers) {
 	for (const auto& peer : peers) {
 		auto ipAndPort = tools::breakNameToParts(peer);
 		if (ipAndPort.has_value()
-		&& m_peers.find(TcpClient(ipAndPort.value().first,ipAndPort.value().second).getName()) == m_peers.end()) {
+		&& m_peers.find(TcpClient(ipAndPort.value().first,ipAndPort.value().second).getName()) == m_peers.end()
+		&& ipAndPort.value().first != "127.0.0.1") {
 			connectTo(ipAndPort.value().first, ipAndPort.value().second);
 		}
 	}
@@ -75,6 +76,21 @@ bool Sylvestrupp::getObject(const std::string& key, std::string* value) {
 	}
 	*value = m_objectsCache[key];
 	return true;
+}
+
+void Sylvestrupp::peerFinished(const std::string& name) {
+	std::lock_guard<std::mutex> lck(m_peersLock);
+	auto peer = m_peers.find(name);
+	if (peer != m_peers.end()) {
+		m_peers.erase(peer);
+	}
+}
+
+void Sylvestrupp::broadcastMessage(const std::string& message) {
+	std::lock_guard<std::mutex> lck(m_peersLock);
+	for (auto& peer : m_peers) {
+		peer.second.sendMessage(message);
+	}
 }
 
 void Sylvestrupp::start() {

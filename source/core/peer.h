@@ -48,6 +48,7 @@ public:
 	Peer& operator=(Peer other);
 
 	void startWork(bool startCommunication);
+	void sendMessage(const std::string& msg);
 	inline bool isRunning() const { return m_running; }
 	inline const std::string& getIp() const { return m_connection.getIp(); }
 	inline const std::string& getPort() const { return m_connection.getPort(); }

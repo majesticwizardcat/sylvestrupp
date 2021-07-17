@@ -116,7 +116,12 @@ void Peer::processObjectMessage(const ObjectMessage* message) {
 		return;
 	}
 	std::cout << "Recieved object: " << message->object << " from: " << getName() << '\n';
-	m_node->addObject(hashing::SHA256AndEncode(message->object), message->object);
+	std::string objectHash = hashing::SHA256AndEncode(message->object);
+	if (m_node->addObject(objectHash, message->object)) {
+		IHaveObjectMessage msg;
+		msg.objectId = std::move(objectHash);
+		m_node->broadcastMessage(msg.asJson());
+	}
 }
 
 void Peer::processGetObjectMessage(const GetObjectMessage* message) {
@@ -144,6 +149,10 @@ void Peer::processPeersMessage(const PeersMessage* message) {
 	}
 	std::cout << "Adding peers: " << message->asJson() << " from: " << m_connection.getName() << '\n';
 	m_node->addNewPeers(message->peerIps);
+}
+
+void Peer::sendMessage(const std::string& msg) {
+	m_connection.send(msg);
 }
 
 void Peer::startWork(bool startCommunication) {
@@ -184,4 +193,5 @@ void Peer::startWork(bool startCommunication) {
 	reader.join();
 	m_running = false;
 	std::cout << "Peer: " << getName() << " finished" << std::endl;
+	m_node->peerFinished(getName());
 }

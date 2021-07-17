@@ -69,14 +69,20 @@ void Connection::terminate() {
 }
 
 TcpClient::TcpClient(const std::string& ip, const std::string& port) {
-	asio::ip::tcp::resolver::query resolver_query(ip,
-		port, asio::ip::tcp::resolver::query::numeric_service);
-	asio::ip::tcp::resolver resolver(SYLV_IO_SERVICE);
-	asio::ip::tcp::resolver::iterator it =
-		resolver.resolve(resolver_query);
-	m_endpoint = it->endpoint();
-	m_ip = m_endpoint.address().to_string();
-	m_port = std::to_string(m_endpoint.port());
+	try {
+		asio::ip::tcp::resolver::query resolver_query(ip,
+			port, asio::ip::tcp::resolver::query::numeric_service);
+		asio::ip::tcp::resolver resolver(SYLV_IO_SERVICE);
+		asio::ip::tcp::resolver::iterator it =
+			resolver.resolve(resolver_query);
+		m_endpoint = it->endpoint();
+		m_ip = m_endpoint.address().to_string();
+		m_port = std::to_string(m_endpoint.port());
+	}
+	catch (const std::exception& e) {
+		m_ip = "";
+		m_port = "";
+	}
 	m_name = m_ip + ':' + m_port;
 }
 

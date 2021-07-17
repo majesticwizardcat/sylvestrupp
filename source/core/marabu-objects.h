@@ -36,7 +36,7 @@ const std::string OBJECT_STR_T = "T";
 const std::string OBJECT_STR_MINER = "miner";
 const std::string OBJECT_STR_NOTE = "note";
 
-std::map<MarabuObjectType, std::string> OBJECT_TYPE_TO_STRING = {
+const std::map<MarabuObjectType, std::string> OBJECT_TYPE_TO_STRING = {
 	std::make_pair(MarabuObjectType::TRANSACTION, OJBECT_TYPE_TRANSACTION),
 	std::make_pair(MarabuObjectType::BLOCK, OJBECT_TYPE_BLOCK),
 };
@@ -55,51 +55,15 @@ struct Outpoint {
 	int index;
 };
 
-void to_json(nlohmann::json& j, const Outpoint& out) {
-	j = {
-		{OBJECT_STR_TXID, out.txid},
-		{OBJECT_STR_INDEX, out.index}
-	};
-}
-
-void from_json(const nlohmann::json& j, Outpoint& out) {
-	out.txid = j.at(OBJECT_STR_TXID);
-	out.index = j.at(OBJECT_STR_INDEX);
-}
-
 struct TransactionInput {
 	Outpoint outpoint;
 	std::string signature;
 };
 
-void to_json(nlohmann::json& j, const TransactionInput& trns) {
-	j = {
-		{OBJECT_STR_OUTPOINT, trns.outpoint},
-		{OBJECT_STR_SIG, trns.signature}
-	};
-}
-
-void from_json(const nlohmann::json& j, TransactionInput& trns) {
-	trns.outpoint = j.at(OBJECT_STR_OUTPOINT);
-	trns.signature = j.at(OBJECT_STR_SIG);
-}
-
 struct TransactionOutput {
 	std::string publicKey;
 	coin_t value;
 };
-
-void to_json(nlohmann::json& j, const TransactionOutput& trns) {
-	j = {
-		{OBJECT_STR_PUBKEY, trns.publicKey},
-		{OBJECT_STR_VALUE, trns.value}
-	};
-}
-
-void from_json(const nlohmann::json& j, TransactionOutput& trns) {
-	trns.publicKey = j.at(OBJECT_STR_PUBKEY);
-	trns.value = j.at(OBJECT_STR_VALUE);
-}
 
 class Transaction : public MarabuObject {
 private:
@@ -118,17 +82,20 @@ private:
 	std::vector<std::string> m_txids;
 	std::string m_nonce;
 	std::string m_prevId;
-	std::string m_created;
 	std::string m_target;
 	std::string m_miner;
 	std::string m_note;
+	int m_created;
 
 public:
 	Block() { }
-	Block(const std::vector<std::string> txids, const std::string& nonce,
-		const std::string& prevId, const std::string& created,
-		const std::string& target, const std::string& miner,
-		const std::string& note)
+	Block(const std::vector<std::string> txids,
+		const std::string& nonce,
+		const std::string& prevId,
+		const std::string& target,
+		const std::string& miner,
+		const std::string& note,
+		int created)
 		: m_txids(txids),
 		m_nonce(nonce),
 		m_prevId(prevId),
@@ -145,8 +112,17 @@ const Block GENESIS_BLOCK(
 	std::vector<std::string>(),
 	"0000000000000000000000000000000000000000000000000000002634878840",
 	"",
-	"1624219079",
 	"00000002af000000000000000000000000000000000000000000000000000000",
 	"dionyziz",
-	"The Economist 2021-06-20: Crypto-miners are probably to blame for the graphics-chip shortage"
+	"The Economist 2021-06-20: Crypto-miners are probably to blame for the graphics-chip shortage",
+	1624219079
 ); 
+
+const std::string GENESIS_BLOCK_HASH = "00000000a420b7cefa2b7730243316921ed59ffe836e111ca3801f82a4f5360e";
+
+void to_json(nlohmann::json& j, const TransactionOutput& trns);
+void from_json(const nlohmann::json& j, TransactionOutput& trns);
+void to_json(nlohmann::json& j, const TransactionInput& trns);
+void from_json(const nlohmann::json& j, TransactionInput& trns);
+void to_json(nlohmann::json& j, const Outpoint& out);
+void from_json(const nlohmann::json& j, Outpoint& out);

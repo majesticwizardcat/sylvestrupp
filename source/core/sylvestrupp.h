@@ -38,4 +38,6 @@ public:
 	bool addObject(const std::string& key, const std::string& value);
 	bool objectExists(const std::string& key);
 	bool getObject(const std::string& key, std::string* value);
+	void peerFinished(const std::string& name);
+	void broadcastMessage(const std::string& message);
 };
